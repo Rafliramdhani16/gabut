@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"> -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-montserrat">
+  <h1 class="text-5xl mt-5 mb-7 text-slate-800 text-center font-bold mx-20 tracking-wider">
+    TUGAS KELOMPOK INFRASTRUKTUR PENDUKUNG APLIKASI
+  </h1>
+  <div class="bg-white rounded-lg p-8 shadow-md mx-20 mt-5 mb-90" id="dataContainer">
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        fetch('https://apiv2.bhadrikais.my.id/mikrotik/getdatadev.php?limit=5')
+          .then(response => response.json())
+          .then(data => {
+            const dataContainer = document.getElementById('dataContainer');
+            
+            
+            const pingDiv = document.createElement('div');
+            const pingTable = document.createElement('table');
+            pingTable.classList.add("table-auto", "w-full", "mb-4", "border-2", "border-collapse");
+
+            const pingHeaderRow = document.createElement('thead');
+            pingHeaderRow.innerHTML = '<tr><th class="border-2 px-4 py-2">Date</th><th class="border-2 px-4 py-2">Value</th><th class="border px-4 py-2">Tracert</th></tr>';
+            pingTable.appendChild(pingHeaderRow);
+
+            const pingBody = document.createElement('tbody');
+            data.ping.forEach(pingEntry => {
+              const pingRow = document.createElement('tr');
+              pingRow.innerHTML = `<td class="border-2 px-4 py-2 text-center">${pingEntry.x}</td><td class="border-2 px-4 py-2 text-center">${pingEntry.y}</td>`;
+              
+              const tracertList = document.createElement('ul');
+              tracertList.classList.add("list-disc", "pl-4");
+
+              pingEntry.tracert.forEach(tracertEntry => {
+                const tracertItem = document.createElement('li');
+                tracertItem.innerHTML = `Address: ${tracertEntry.address}, Last: ${tracertEntry.last}, ISP: ${tracertEntry.isp}, Country: ${tracertEntry.country}`;
+                tracertList.appendChild(tracertItem);
+              });
+
+              const tracertCell = document.createElement('td');
+              tracertCell.classList.add("border-2", "px-4", "py-2");
+              tracertCell.appendChild(tracertList);
+
+              pingRow.appendChild(tracertCell);
+              pingBody.appendChild(pingRow);
+            });
+
+            pingTable.appendChild(pingBody);
+            pingDiv.appendChild(pingTable);
+
+            const bandwidthDiv = document.createElement('div');
+            bandwidthDiv.classList.add("text-center");
+
+            const bandwidthTable = document.createElement('table');
+            bandwidthTable.classList.add("table-auto", "w-full", "border-2", "border-collapse");
+
+            const bandwidthHeaderRow = document.createElement('thead');
+            bandwidthHeaderRow.innerHTML = '<tr><th class="border-2 px-4 py-2">Date</th><th class="border-2 px-4 py-2">Value</th></tr>';
+            bandwidthTable.appendChild(bandwidthHeaderRow);
+
+            const bandwidthBody = document.createElement('tbody');
+            data.bandwith.forEach(bandwidthEntry => {
+              const bandwidthRow = document.createElement('tr');
+              bandwidthRow.innerHTML = `<td class="border-2 px-4 py-2">${bandwidthEntry.x}</td><td class="border-2 px-4 py-2">${bandwidthEntry.y}</td>`;
+              bandwidthBody.appendChild(bandwidthRow);
+            });
+
+            bandwidthTable.appendChild(bandwidthBody);
+            bandwidthDiv.appendChild(bandwidthTable);
+
+            dataContainer.appendChild(pingDiv);
+            dataContainer.appendChild(bandwidthDiv);
+          })
+          .catch(error => console.error('Error tidak ada data:', error));
+      });
+    </script>
+  </div>
+
+</body>
+</html>
